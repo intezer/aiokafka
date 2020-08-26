@@ -252,6 +252,7 @@ class GroupCoordinator(BaseCoordinator):
         self._auto_commit_interval_ms = auto_commit_interval_ms
         self._traced_from_parent_span = traced_from_parent_span
         self._start_rebalancing_span = start_rebalancing_span
+        self._rebalancing_span = None
         self._start_coordinator_span = start_coordinator_span
         self._on_generation_id_known = on_generation_id_known
         self._flush_spans = flush_spans

@@ -23,7 +23,6 @@ class TestKafkaProducerIntegration(KafkaIntegrationTestCase):
         producer = AIOKafkaProducer(
             loop=self.loop, bootstrap_servers=self.hosts,
             transactional_id="sobaka_producer")
-        producer
         with self.assertRaises(UnsupportedVersionError):
             await producer.start()
         await producer.stop()
@@ -206,7 +205,7 @@ class TestKafkaProducerIntegration(KafkaIntegrationTestCase):
                         for msg in msgs:
                             out_msg = b"OUT-" + msg.value
                             # We produce to the same partition
-                            producer.send(
+                            await producer.send(
                                 out_topic, value=out_msg,
                                 partition=tp.partition)
                         offsets[tp] = msg.offset + 1
@@ -265,7 +264,7 @@ class TestKafkaProducerIntegration(KafkaIntegrationTestCase):
                         for msg in msgs:
                             out_msg = b"OUT-" + msg.value
                             # We produce to the same partition
-                            producer.send(
+                            await producer.send(
                                 out_topic, value=out_msg,
                                 partition=tp.partition)
                         offsets[tp] = msg.offset + 1

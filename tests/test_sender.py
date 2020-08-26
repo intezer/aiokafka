@@ -1,3 +1,4 @@
+import asyncio
 from unittest import mock
 
 from ._testutil import (
@@ -58,7 +59,7 @@ class TestSender(KafkaIntegrationTestCase):
         sender = Sender(
             client, acks=-1, txn_manager=tm, message_accumulator=ma,
             retry_backoff_ms=100, linger_ms=0, request_timeout_ms=40000,
-            loop=self.loop)
+            loop=self.loop, on_irrecoverable_error=None)
         self.add_cleanup(sender.close)
         return sender
 
@@ -538,7 +539,8 @@ class TestSender(KafkaIntegrationTestCase):
             TopicPartition("topic", 0): OffsetAndMetadata(10, ""),
             TopicPartition("topic", 1): OffsetAndMetadata(11, ""),
         }
-        add_handler = TxnOffsetCommitHandler(sender, offsets, "some_group")
+        fut = asyncio.Future()
+        add_handler = TxnOffsetCommitHandler(sender, offsets, "some_group", fut)
 
         req = add_handler.create_request()
         self.assertEqual(req.API_KEY, TxnOffsetCommitRequest[0].API_KEY)
@@ -561,7 +563,8 @@ class TestSender(KafkaIntegrationTestCase):
             TopicPartition("topic", 0): OffsetAndMetadata(10, ""),
             TopicPartition("topic", 1): OffsetAndMetadata(11, ""),
         }
-        add_handler = TxnOffsetCommitHandler(sender, offsets, "some_group")
+        fut = asyncio.Future()
+        add_handler = TxnOffsetCommitHandler(sender, offsets, "some_group", fut)
         tm = sender._txn_manager
         tm.offset_committed = mock.Mock()
 
@@ -591,7 +594,8 @@ class TestSender(KafkaIntegrationTestCase):
             TopicPartition("topic", 0): OffsetAndMetadata(10, ""),
             TopicPartition("topic", 1): OffsetAndMetadata(11, ""),
         }
-        add_handler = TxnOffsetCommitHandler(sender, offsets, "some_group")
+        fut = asyncio.Future()
+        add_handler = TxnOffsetCommitHandler(sender, offsets, "some_group", fut)
         tm = sender._txn_manager
         tm.begin_transaction()
         tm.offset_committed = mock.Mock()
