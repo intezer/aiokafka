@@ -94,8 +94,7 @@ class ConnIntegrationTest(KafkaIntegrationTestCase):
         # It shouldn't break if we have a long running call either
         readexactly = conn._reader.readexactly
         with mock.patch.object(conn._reader, 'readexactly') as mocked:
-            @asyncio.coroutine
-            def long_read(n):
+            async def long_read(n):
                 await asyncio.sleep(0.2, loop=self.loop)
                 return (await readexactly(n))
             mocked.side_effect = long_read
@@ -242,6 +241,7 @@ class ConnIntegrationTest(KafkaIntegrationTestCase):
         conn.close()
         self.assertFalse(conn.connected())
 
+    @run_until_complete
     async def test_connection_version_info(self):
         # All version supported
         version_info = VersionInfo({

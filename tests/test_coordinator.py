@@ -135,10 +135,9 @@ class TestKafkaCoordinatorIntegration(KafkaIntegrationTestCase):
         self.add_cleanup(coordinator.close)
 
         _on_join_leader_mock = mock.Mock()
-        _on_join_leader_mock.side_effect = asyncio.coroutine(
-            lambda resp: b"123")
+        _on_join_leader_mock.side_effect = asyncio.coroutine(lambda resp: b"123")
 
-       async def do_rebalance():
+        async def do_rebalance():
             rebalance = CoordinatorGroupRebalance(
                 coordinator, coordinator.group_id, coordinator.coordinator_id,
                 subscription.subscription, coordinator._assignors,
@@ -215,7 +214,7 @@ class TestKafkaCoordinatorIntegration(KafkaIntegrationTestCase):
         self.assertEqual(_on_join_leader_mock.call_count, 2)
 
         # Subscription changes before rebalance finishes
-        def send_change_sub(*args, **kw):
+        async def send_change_sub(*args, **kw):
             subscription.subscribe(topics=set(['topic2']))
             return (await send(*args, **kw))
         mocked.send.side_effect = send_change_sub
