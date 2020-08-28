@@ -111,7 +111,7 @@ extras_require = {'snappy': ['python-snappy>=0.5'], }
 
 
 def read_version():
-    regexp = re.compile(r"^__version__\W*=\W*'([\d.abrcdevt]+)'")
+    regexp = re.compile(r"^__version__\W*=\W*'([\d.abrcdev]+)'")
     init_py = os.path.join(os.path.dirname(__file__),
                            'aiokafka', '__init__.py')
     with open(init_py) as f:
@@ -138,11 +138,13 @@ classifiers = [
 
 
 args = dict(
-    name='robinhood-aiokafka',
+    name='dt-aiokafka',
     version=read_version(),
     description=('Kafka integration with asyncio.'),
     long_description=('This is a temporary fork of aiokafka '
-                      'maintained by Robinhood'),
+                      'maintained by Robinhood, forked further by DomainTools.'
+                      'This should only be use within Faust. Normal kafka '
+                      'access should use the aiolib-aiokafka library.'),
     classifiers=classifiers,
     platforms=['POSIX'],
     author='Andrew Svetlov',
